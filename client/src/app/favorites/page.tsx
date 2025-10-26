@@ -11,29 +11,53 @@ import { LoadingGrid } from '@/components/Loading';
 
 export default function FavoritesPage() {
   const router = useRouter();
-  const { isAuthenticated, user } = useAuth();
+  const { isAuthenticated, user, isLoading: authLoading } = useAuth();
   const [favorites, setFavorites] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    if (!isAuthenticated) {
+    // Only redirect if loading is complete and user is not authenticated
+    if (!authLoading && !isAuthenticated) {
+      // Store the current path to redirect back after login
+      if (typeof window !== 'undefined') {
+        sessionStorage.setItem('redirectAfterLogin', window.location.pathname);
+      }
       router.push('/login');
       return;
     }
 
-    const loadFavorites = async () => {
-      try {
-        const response = await api.getFavorites();
-        setFavorites(response.data || []);
-      } catch (error) {
-        console.error('Error loading favorites:', error);
-      } finally {
-        setLoading(false);
-      }
-    };
+    // Only load favorites if authenticated and not loading
+    if (!authLoading && isAuthenticated) {
+      const loadFavorites = async () => {
+        try {
+          const response = await api.getFavorites();
+          setFavorites(response.data || []);
+        } catch (error) {
+          console.error('Error loading favorites:', error);
+        } finally {
+          setLoading(false);
+        }
+      };
 
-    loadFavorites();
-  }, [isAuthenticated, router]);
+      loadFavorites();
+    }
+  }, [isAuthenticated, authLoading, router]);
+
+  // Show loading state while authentication is being checked
+  if (authLoading) {
+    return (
+      <>
+        <Header />
+        <main className="min-h-screen bg-gray-50 flex items-center justify-center">
+          <div className="text-center">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-purple-600 mx-auto"></div>
+            <p className="mt-4 text-gray-600">Loading...</p>
+          </div>
+        </main>
+        <Footer />
+      </>
+    );
+  }
 
   if (!isAuthenticated) {
     return null;

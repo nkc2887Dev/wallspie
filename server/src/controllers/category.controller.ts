@@ -7,11 +7,8 @@ export class CategoryController {
   // Get all categories (public)
   static async getAll(req: Request, res: Response): Promise<void> {
     try {
-      const includeStats = req.query.stats === 'true';
-
-      const categories = includeStats
-        ? await CategoryModel.getWithStats()
-        : await CategoryModel.getOrdered();
+      // Always include wallpaper count stats
+      const categories = await CategoryModel.getWithStats();
 
       res.json({
         success: true,

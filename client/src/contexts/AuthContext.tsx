@@ -31,7 +31,35 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
+  const createGuest = async () => {
+    try {
+      const response = await api.createGuest();
+      if (response.data) {
+        api.setToken(response.data.accessToken);
+        localStorage.setItem('refreshToken', response.data.refreshToken);
+        setUser(response.data.user);
+      }
+    } catch (error) {
+      console.error('Failed to create guest:', error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleTokenExpiration = () => {
+    // Clear tokens and user data
+    api.setToken(null);
+    localStorage.removeItem('accessToken');
+    localStorage.removeItem('refreshToken');
+    setUser(null);
+    // Create new guest user
+    createGuest();
+  };
+
   useEffect(() => {
+    // Set up unauthorized callback for token expiration
+    api.setOnUnauthorized(handleTokenExpiration);
+
     // Check for existing token and load user
     const token = localStorage.getItem('accessToken');
     if (token) {
@@ -73,21 +101,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       api.setToken(response.data.accessToken);
       localStorage.setItem('refreshToken', response.data.refreshToken);
       setUser(response.data.user);
-    }
-  };
-
-  const createGuest = async () => {
-    try {
-      const response = await api.createGuest();
-      if (response.data) {
-        api.setToken(response.data.accessToken);
-        localStorage.setItem('refreshToken', response.data.refreshToken);
-        setUser(response.data.user);
-      }
-    } catch (error) {
-      console.error('Failed to create guest:', error);
-    } finally {
-      setIsLoading(false);
     }
   };
 

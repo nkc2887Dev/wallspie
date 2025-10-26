@@ -19,6 +19,7 @@ interface ApiResponse<T = any> {
 class ApiClient {
   private baseURL: string;
   private token: string | null = null;
+  private onUnauthorized: (() => void) | null = null;
 
   constructor(baseURL: string) {
     this.baseURL = baseURL;
@@ -42,6 +43,10 @@ class ApiClient {
     return this.token;
   }
 
+  setOnUnauthorized(callback: () => void) {
+    this.onUnauthorized = callback;
+  }
+
   private async request<T>(
     endpoint: string,
     options: RequestInit = {}
@@ -63,6 +68,10 @@ class ApiClient {
     const data = await response.json();
 
     if (!response.ok) {
+      // Handle token expiration (401 Unauthorized)
+      if (response.status === 401 && this.onUnauthorized) {
+        this.onUnauthorized();
+      }
       throw new Error(data.error || 'An error occurred');
     }
 
