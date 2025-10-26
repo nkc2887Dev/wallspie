@@ -57,7 +57,7 @@ export class UserModel {
     );
   }
 
-  // Get all users (admin only)
+  // Get all users (admin only) - includes inactive users
   static async getAll(
     page: number = 1,
     limit: number = 20,
@@ -73,7 +73,7 @@ export class UserModel {
       params.push(userType);
     }
 
-    query += ' ORDER BY created_at DESC LIMIT ? OFFSET ?';
+    query += ' ORDER BY is_active DESC, created_at DESC LIMIT ? OFFSET ?';
     params.push(limit, offset);
 
     const [users] = await pool.query<RowDataPacket[]>(query, params);

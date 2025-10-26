@@ -1,3 +1,5 @@
+'use client';
+
 import { USER_TYPE } from '@/constants';
 import { useAuth } from '@/contexts/AuthContext';
 import Link from 'next/link';

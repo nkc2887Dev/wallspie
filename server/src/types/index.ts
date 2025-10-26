@@ -211,8 +211,8 @@ export interface AnalyticsOverview {
   adminUsers: number;
   registeredUsers: number;
   guestUsers: number;
-  todayVisitors: number;
-  todayDownloads: number;
+  // todayVisitors: number;
+  // todayDownloads: number;
 }
 
 export interface TopWallpaper {

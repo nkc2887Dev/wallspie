@@ -74,39 +74,42 @@ export class AnalyticsModel {
     );
   }
 
-  // Increment today's view count
-  static async incrementTodayViews(): Promise<void> {
-    const today = new Date().toISOString().split('T')[0];
+  // // Increment today's view count
+  // static async incrementTodayViews(): Promise<void> {
+  //   const today = new Date().toISOString().split('T')[0];
 
-    await pool.query(
-      `INSERT INTO analytics_daily (date, total_views)
-       VALUES (?, 1)
-       ON DUPLICATE KEY UPDATE total_views = total_views + 1`,
-      [today]
-    );
-  }
+  //   await pool.query(
+  //     `INSERT INTO analytics_daily (date, total_views)
+  //      VALUES (?, 1)
+  //      ON DUPLICATE KEY UPDATE total_views = total_views + 1`,
+  //     [today]
+  //   );
+  // }
 
   // Get overview stats
   static async getOverview(): Promise<AnalyticsOverview> {
     // Get total stats (excluding owner from user count)
     const [totals] = await pool.query<RowDataPacket[]>(`
       SELECT
-        (SELECT COUNT(*) FROM users WHERE is_owner = 0 AND is_active = 1) as totalUsers,
-        (SELECT COUNT(*) FROM users WHERE user_type = 1 AND is_owner = 0 AND is_active = 1) as adminUsers,
-        (SELECT COUNT(*) FROM users WHERE user_type = 2 AND is_active = 1) as registeredUsers,
-        (SELECT COUNT(*) FROM users WHERE user_type = 3) as guestUsers,
+        -- User stats: Single table scan with conditional aggregation
+        SUM(CASE WHEN u.is_owner = 0 AND u.is_active = 1 THEN 1 ELSE 0 END) as totalUsers,
+        SUM(CASE WHEN u.user_type = 1 AND u.is_owner = 0 AND u.is_active = 1 THEN 1 ELSE 0 END) as adminUsers,
+        SUM(CASE WHEN u.user_type = 2 AND u.is_active = 1 THEN 1 ELSE 0 END) as registeredUsers,
+        SUM(CASE WHEN u.user_type = 3 AND u.is_active = 1 THEN 1 ELSE 0 END) as guestUsers,
+
+        -- Wallpaper/Category stats: Efficient with indexes
         (SELECT COUNT(*) FROM wallpapers WHERE is_active = 1) as totalWallpapers,
         (SELECT COUNT(*) FROM categories WHERE is_active = 1) as totalCategories,
-        (SELECT SUM(download_count) FROM wallpapers) as totalDownloads,
-        (SELECT SUM(view_count) FROM wallpapers) as totalVisitors
+        (SELECT COALESCE(SUM(download_count), 0) FROM wallpapers) as totalDownloads,
+        (SELECT COALESCE(SUM(view_count), 0) FROM wallpapers) as totalVisitors
+      FROM users u
     `);
-
     // Get today's stats
-    const today = new Date().toISOString().split('T')[0];
-    const [todayStats] = await pool.query<RowDataPacket[]>(
-      'SELECT total_downloads as todayDownloads, total_views as todayVisitors FROM analytics_daily WHERE date = ?',
-      [today]
-    );
+    // const today = new Date().toISOString().split('T')[0];
+    // const [todayStats] = await pool.query<RowDataPacket[]>(
+    //   'SELECT total_downloads as todayDownloads, total_views as todayVisitors FROM analytics_daily WHERE date = ?',
+    //   [today]
+    // );
 
     return {
       totalUsers: totals[0].totalUsers || 0,
@@ -117,8 +120,8 @@ export class AnalyticsModel {
       totalCategories: totals[0].totalCategories || 0,
       totalDownloads: totals[0].totalDownloads || 0,
       totalVisitors: totals[0].totalVisitors || 0,
-      todayDownloads: todayStats[0]?.todayDownloads || 0,
-      todayVisitors: todayStats[0]?.todayVisitors || 0,
+      // todayDownloads: todayStats[0]?.todayDownloads || 0,
+      // todayVisitors: todayStats[0]?.todayVisitors || 0,
     };
   }
 

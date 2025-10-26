@@ -11,9 +11,11 @@ const USER_TYPES = {
 
 export default function AdminUsersPage() {
   const [users, setUsers] = useState<any[]>([]);
+  const [filteredUsers, setFilteredUsers] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [showForm, setShowForm] = useState(false);
   const [editingUser, setEditingUser] = useState<any>(null);
+  const [statusFilter, setStatusFilter] = useState<'all' | 'active' | 'inactive'>('all');
   const [formData, setFormData] = useState({
     name: '',
     email: '',
@@ -26,6 +28,10 @@ export default function AdminUsersPage() {
     loadUsers();
   }, []);
 
+  useEffect(() => {
+    filterUsers();
+  }, [users, statusFilter]);
+
   const loadUsers = async () => {
     try {
       const response = await api.getUsers();
@@ -34,6 +40,16 @@ export default function AdminUsersPage() {
       console.error('Error loading users:', error);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const filterUsers = () => {
+    if (statusFilter === 'all') {
+      setFilteredUsers(users);
+    } else if (statusFilter === 'active') {
+      setFilteredUsers(users.filter(u => u.is_active === 1));
+    } else {
+      setFilteredUsers(users.filter(u => u.is_active === 0));
     }
   };
 
@@ -77,6 +93,19 @@ export default function AdminUsersPage() {
     } catch (error: any) {
       console.error('Error deleting user:', error);
       alert(error.message || 'Failed to delete user');
+    }
+  };
+
+  const handleToggleStatus = async (userId: number, currentStatus: number) => {
+    const action = currentStatus === 1 ? 'deactivate' : 'reactivate';
+    if (!confirm(`Are you sure you want to ${action} this user?`)) return;
+
+    try {
+      await api.updateUser(userId, { is_active: currentStatus === 1 ? 0 : 1 });
+      loadUsers();
+    } catch (error: any) {
+      console.error('Error updating user status:', error);
+      alert(error.message || 'Failed to update user status');
     }
   };
 
@@ -132,6 +161,42 @@ export default function AdminUsersPage() {
           </button>
         )}
       </div>
+
+      {/* Filter Tabs */}
+      {!showForm && (
+        <div className="flex space-x-2 border-b border-gray-200">
+          <button
+            onClick={() => setStatusFilter('all')}
+            className={`px-4 py-2 font-medium text-sm border-b-2 transition-colors ${
+              statusFilter === 'all'
+                ? 'border-purple-600 text-purple-600'
+                : 'border-transparent text-gray-500 hover:text-gray-700'
+            }`}
+          >
+            All Users ({users.length})
+          </button>
+          <button
+            onClick={() => setStatusFilter('active')}
+            className={`px-4 py-2 font-medium text-sm border-b-2 transition-colors ${
+              statusFilter === 'active'
+                ? 'border-green-600 text-green-600'
+                : 'border-transparent text-gray-500 hover:text-gray-700'
+            }`}
+          >
+            Active ({users.filter(u => u.is_active === 1).length})
+          </button>
+          <button
+            onClick={() => setStatusFilter('inactive')}
+            className={`px-4 py-2 font-medium text-sm border-b-2 transition-colors ${
+              statusFilter === 'inactive'
+                ? 'border-orange-600 text-orange-600'
+                : 'border-transparent text-gray-500 hover:text-gray-700'
+            }`}
+          >
+            Inactive ({users.filter(u => u.is_active === 0).length})
+          </button>
+        </div>
+      )}
 
       {/* Form */}
       {showForm && (
@@ -238,7 +303,7 @@ export default function AdminUsersPage() {
             <div key={i} className="bg-gray-300 animate-pulse rounded-lg h-24"></div>
           ))}
         </div>
-      ) : users.length > 0 ? (
+      ) : filteredUsers.length > 0 ? (
         <div className="bg-white rounded-lg shadow overflow-hidden">
           <table className="min-w-full divide-y divide-gray-200">
             <thead className="bg-gray-50">
@@ -264,8 +329,8 @@ export default function AdminUsersPage() {
               </tr>
             </thead>
             <tbody className="bg-white divide-y divide-gray-200">
-              {users.map((user) => (
-                <tr key={user.id} className="hover:bg-gray-50">
+              {filteredUsers.map((user) => (
+                <tr key={user.id} className={`hover:bg-gray-50 ${user.is_active === 0 ? 'bg-gray-50 opacity-60' : ''}`}>
                   <td className="px-6 py-4 whitespace-nowrap">
                     <div className="text-sm font-medium text-gray-900">{user.name}</div>
                   </td>
@@ -295,20 +360,32 @@ export default function AdminUsersPage() {
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
                     <div className="flex items-center space-x-3">
-                      <button
-                        onClick={() => handleEdit(user)}
-                        disabled={user.is_owner === 1}
-                        className="text-purple-600 hover:text-purple-900 disabled:opacity-50 disabled:cursor-not-allowed"
-                      >
-                        Edit
-                      </button>
-                      {user.is_owner !== 1 && user.user_type !== USER_TYPES.GUEST && (
+                      {user.is_owner !== 1 && user.is_active === 1 && user.user_type !== USER_TYPES.GUEST && (
                         <button
-                          onClick={() => handleDelete(user.id)}
-                          className="text-red-600 hover:text-red-900"
+                          onClick={() => handleEdit(user)}
+                          className="text-purple-600 hover:text-purple-900 disabled:opacity-50 disabled:cursor-not-allowed"
                         >
-                          Delete
+                          Edit
                         </button>
+                      )}
+                      {user.is_owner !== 1 && (
+                        <>
+                          {user.is_active === 1 ? (
+                            <button
+                              onClick={() => handleToggleStatus(user.id, user.is_active)}
+                              className="text-orange-600 hover:text-orange-900"
+                            >
+                              Deactivate
+                            </button>
+                          ) : (
+                            <button
+                              onClick={() => handleToggleStatus(user.id, user.is_active)}
+                              className="text-green-600 hover:text-green-900"
+                            >
+                              Reactivate
+                            </button>
+                          )}
+                        </>
                       )}
                     </div>
                   </td>
