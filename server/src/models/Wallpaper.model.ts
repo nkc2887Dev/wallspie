@@ -333,9 +333,18 @@ export class WallpaperModel {
 
   // Helper: Parse wallpaper with JSON fields
   private static parseWallpaper(row: any): Wallpaper {
+    let tags = [];
+    if (row?.tags && row.tags.length > 0 && typeof row.tags === "string") {
+      try {
+        tags = JSON.parse(row.tags);
+      } catch (error) {
+        console.error('Failed to parse tags:', row.tags, error);
+        tags = [];
+      }
+    }
     return {
       ...row,
-      tags: row.tags ? JSON.parse(row.tags) : [],
+      tags,
     };
   }
 

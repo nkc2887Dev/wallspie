@@ -74,12 +74,13 @@ export default function WallpaperDetailPage() {
 
     setDownloading(true);
     try {
-      await api.trackDownload(wallpaper.id, selectedResolution.id);
+      // Use the server's download endpoint that handles CORS and forces download
+      const downloadUrl = `${process.env.NEXT_PUBLIC_API_URL}/downloads/file?wallpaperId=${wallpaper.id}&resolutionId=${selectedResolution.id}`;
 
       // Trigger browser download
       const link = document.createElement('a');
-      link.href = selectedResolution.url;
-      link.download = `${wallpaper.slug}-${selectedResolution.name}.jpg`;
+      link.href = downloadUrl;
+      link.target = '_blank';
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);

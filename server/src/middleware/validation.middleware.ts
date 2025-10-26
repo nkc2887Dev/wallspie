@@ -107,13 +107,15 @@ export const validateWallpaper = (
   res: Response,
   next: NextFunction
 ): void => {
-  const { title, category_ids } = req.body;
+  let { title, category_ids } = req.body;
 
   const errors: string[] = [];
 
   if (!title || title.trim().length === 0) {
     errors.push('Wallpaper title is required');
   }
+
+  category_ids = typeof category_ids === 'string' ? JSON.parse(category_ids) : category_ids;
 
   if (!category_ids || !Array.isArray(category_ids) || category_ids.length === 0) {
     errors.push('At least one category is required');
