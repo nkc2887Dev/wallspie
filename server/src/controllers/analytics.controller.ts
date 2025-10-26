@@ -181,4 +181,24 @@ export class AnalyticsController {
       });
     }
   }
+
+  // Get recent downloads (admin only)
+  static async getRecentDownloads(req: Request, res: Response): Promise<void> {
+    try {
+      const limit = parseInt(req.query.limit as string) || 10;
+
+      const downloads = await DownloadModel.getRecent(limit);
+
+      res.json({
+        success: true,
+        data: downloads,
+      });
+    } catch (error: any) {
+      console.error('Get recent downloads error:', error);
+      res.status(500).json({
+        success: false,
+        error: 'Failed to fetch recent downloads',
+      });
+    }
+  }
 }

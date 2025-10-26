@@ -149,14 +149,14 @@ export class AnalyticsModel {
 
   // Get download trend (for charts)
   static async getDownloadTrend(period: 'daily' | 'weekly' | 'monthly' = 'daily', days: number = 30): Promise<any[]> {
-    let groupBy = 'DATE(date)';
+    let groupByExpression = 'DATE(date)';
     let dateFormat = '%Y-%m-%d';
 
     if (period === 'weekly') {
-      groupBy = 'YEARWEEK(date)';
+      groupByExpression = 'YEARWEEK(date)';
       dateFormat = '%Y-W%u';
     } else if (period === 'monthly') {
-      groupBy = 'DATE_FORMAT(date, "%Y-%m")';
+      groupByExpression = 'DATE_FORMAT(date, "%Y-%m")';
       dateFormat = '%Y-%m';
     }
 
@@ -168,9 +168,9 @@ export class AnalyticsModel {
         SUM(unique_visitors) as visitors
        FROM analytics_daily
        WHERE date >= DATE_SUB(CURDATE(), INTERVAL ? DAY)
-       GROUP BY ${groupBy}
-       ORDER BY date ASC`,
-      [dateFormat, days]
+       GROUP BY DATE_FORMAT(date, ?)
+       ORDER BY DATE_FORMAT(date, ?) ASC`,
+      [dateFormat, days, dateFormat, dateFormat]
     );
     return rows;
   }

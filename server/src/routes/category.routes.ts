@@ -8,6 +8,7 @@ const router = Router();
 
 // Public routes
 router.get('/', asyncHandler(CategoryController.getAll));
+router.get('/:id/wallpapers', asyncHandler(CategoryController.getWallpapers));
 router.get('/:slug', asyncHandler(CategoryController.getBySlug));
 
 // Admin routes

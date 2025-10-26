@@ -3,9 +3,11 @@
 import Link from 'next/link';
 import { useAuth } from '@/contexts/AuthContext';
 import { useState } from 'react';
+import { USER_TYPE } from '@/constants';
 
 export default function Header() {
   const { user, isAuthenticated, isAdmin, logout } = useAuth();
+  const isGuest = user?.user_type === USER_TYPE.GUEST;
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   return (
@@ -14,7 +16,7 @@ export default function Header() {
         <div className="flex justify-between h-16">
           <div className="flex items-center">
             <Link href="/" className="flex items-center space-x-2">
-              <span className="text-2xl font-bold text-blue-600">WellPie</span>
+              <span className="text-2xl font-bold text-blue-600">WallsPie</span>
             </Link>
 
             <div className="hidden md:ml-10 md:flex md:space-x-8">
@@ -24,7 +26,7 @@ export default function Header() {
               <Link href="/search" className="text-gray-700 hover:text-blue-600 px-3 py-2 text-sm font-medium">
                 Search
               </Link>
-              {isAuthenticated && (
+              {(isAuthenticated && !isGuest) && (
                 <Link href="/favorites" className="text-gray-700 hover:text-blue-600 px-3 py-2 text-sm font-medium">
                   Favorites
                 </Link>
@@ -38,12 +40,12 @@ export default function Header() {
           </div>
 
           <div className="flex items-center space-x-4">
-            {isAuthenticated ? (
+            {isAuthenticated && !isGuest ? (
               <>
                 <span className="text-sm text-gray-600">{user?.name}</span>
                 <button
                   onClick={logout}
-                  className="bg-gray-100 hover:bg-gray-200 px-4 py-2 rounded-md text-sm font-medium"
+                  className="text-black bg-gray-100 hover:bg-gray-200 px-4 py-2 rounded-md text-sm font-medium"
                 >
                   Logout
                 </button>
@@ -80,7 +82,7 @@ export default function Header() {
             <Link href="/search" className="block px-3 py-2 text-base font-medium text-gray-700 hover:text-blue-600">
               Search
             </Link>
-            {isAuthenticated && (
+            {isAuthenticated && !isGuest && (
               <Link href="/favorites" className="block px-3 py-2 text-base font-medium text-gray-700 hover:text-blue-600">
                 Favorites
               </Link>

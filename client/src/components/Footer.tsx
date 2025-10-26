@@ -1,12 +1,17 @@
+import { USER_TYPE } from '@/constants';
+import { useAuth } from '@/contexts/AuthContext';
 import Link from 'next/link';
 
 export default function Footer() {
+    const { user, isAuthenticated } = useAuth();
+    const isGuest = user?.user_type === USER_TYPE.GUEST;
+
   return (
     <footer className="bg-gray-900 text-white mt-20">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
           <div>
-            <h3 className="text-2xl font-bold mb-4">WellPie</h3>
+            <h3 className="text-2xl font-bold mb-4">WallsPie</h3>
             <p className="text-gray-400">
               Free 4K wallpapers and HD backgrounds for your desktop and mobile devices.
             </p>
@@ -27,7 +32,9 @@ export default function Footer() {
             <ul className="space-y-2">
               <li><Link href="/login" className="text-gray-400 hover:text-white">Login</Link></li>
               <li><Link href="/register" className="text-gray-400 hover:text-white">Sign Up</Link></li>
-              <li><Link href="/favorites" className="text-gray-400 hover:text-white">Favorites</Link></li>
+              {(isAuthenticated && !isGuest) && (
+                  <li><Link href="/favorites" className="text-gray-700 hover:text-blue-600 px-3 py-2 text-sm font-medium">Favorites</Link></li>
+              )}
             </ul>
           </div>
 
@@ -43,7 +50,7 @@ export default function Footer() {
         </div>
 
         <div className="border-t border-gray-800 mt-8 pt-8 text-center text-gray-400">
-          <p>&copy; 2025 WellPie. All rights reserved.</p>
+          <p>&copy; 2025 WallsPie. All rights reserved.</p>
         </div>
       </div>
     </footer>

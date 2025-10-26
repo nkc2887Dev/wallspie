@@ -39,7 +39,7 @@ if (process.env.NODE_ENV === 'development') {
 app.get('/', (req: Request, res: Response) => {
   res.json({
     success: true,
-    message: 'Welcome to WellPie API',
+    message: 'Welcome to WallsPie API',
     version: '1.0.0',
     endpoints: {
       auth: '/api/v1/auth',
@@ -92,26 +92,13 @@ app.listen(PORT, async () => {
   console.log(`
 ╔════════════════════════════════════════╗
 ║                                        ║
-║       🎨 WellPie API Server 🎨        ║
+║       🎨 WallsPie API Server 🎨        ║
 ║                                        ║
 ╚════════════════════════════════════════╝
 
 🚀 Server running on: http://localhost:${PORT}
 📊 Environment: ${process.env.NODE_ENV || 'development'}
 🌐 CORS enabled for: ${process.env.CLIENT_URL || 'http://localhost:3000'}
-
-🔗 API Endpoints:
-   • Root:         http://localhost:${PORT}/
-   • Health:       http://localhost:${PORT}/health
-   • Auth:         http://localhost:${PORT}/api/v1/auth
-   • Categories:   http://localhost:${PORT}/api/v1/categories
-   • Wallpapers:   http://localhost:${PORT}/api/v1/wallpapers
-   • Downloads:    http://localhost:${PORT}/api/v1/downloads
-   • Favorites:    http://localhost:${PORT}/api/v1/favorites
-   • Analytics:    http://localhost:${PORT}/api/v1/admin/analytics
-
-📚 Documentation: See PROJECT_PLAN.md
-🔧 Quick Start: See QUICK_START.md
   `);
 
   // Test database connection

@@ -27,7 +27,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
           <div className="flex items-center justify-between h-16">
             <div className="flex items-center">
               <Link href="/admin" className="text-2xl font-bold">
-                WellPie Admin
+                WallsPie Admin
               </Link>
               <nav className="ml-10 flex space-x-4">
                 <Link

@@ -385,4 +385,33 @@ export class WallpaperController {
       });
     }
   }
+
+  // Get wallpaper resolutions (public)
+  static async getResolutions(req: Request, res: Response): Promise<void> {
+    try {
+      const { id } = req.params;
+
+      const wallpaper = await WallpaperModel.findById(parseInt(id));
+      if (!wallpaper) {
+        res.status(404).json({
+          success: false,
+          error: 'Wallpaper not found',
+        });
+        return;
+      }
+
+      const resolutions = await WallpaperResolutionModel.getByWallpaperId(parseInt(id));
+
+      res.json({
+        success: true,
+        data: resolutions,
+      });
+    } catch (error: any) {
+      console.error('Get wallpaper resolutions error:', error);
+      res.status(500).json({
+        success: false,
+        error: 'Failed to fetch resolutions',
+      });
+    }
+  }
 }

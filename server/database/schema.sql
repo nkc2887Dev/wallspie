@@ -1,4 +1,4 @@
--- WellPie Database Schema
+-- WallsPie Database Schema
 -- MySQL Database for Wallpaper Download Website
 
 CREATE DATABASE IF NOT EXISTS wellpie_db CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
@@ -235,7 +235,7 @@ INSERT INTO categories (name, slug, description, order_position, is_predefined, 
 -- Password: Admin@123 (bcrypt hashed - you need to update this)
 -- =====================================================
 INSERT INTO users (email, password, name, user_type, is_owner, is_active) VALUES
-('admin@wellpie.com', '\$2b\$10\$BSvpLF2Yosr4ag4mvTZXheQi.wDJtCeffvlePe4ttMgEK1lZt8ije', 'System Admin', 1, 1, 1);
+('admin@wallspie.com', '\$2b\$10\$BSvpLF2Yosr4ag4mvTZXheQi.wDJtCeffvlePe4ttMgEK1lZt8ije', 'System Admin', 1, 1, 1);
 
 -- Note: You must hash the password using bcrypt before inserting
 -- Example in Node.js: const hash = await bcrypt.hash('Admin@123', 10);

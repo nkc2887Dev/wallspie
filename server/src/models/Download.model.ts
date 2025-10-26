@@ -195,4 +195,33 @@ export class DownloadModel {
     const [rows] = await pool.query<RowDataPacket[]>(query, params);
     return rows;
   }
+
+  // Get recent downloads (admin)
+  static async getRecent(limit: number = 10): Promise<any[]> {
+    const [rows] = await pool.query<RowDataPacket[]>(
+      `SELECT
+        d.id,
+        d.downloaded_at,
+        d.device_type,
+        d.ip_address,
+        w.id as wallpaper_id,
+        w.title as wallpaper_title,
+        w.slug as wallpaper_slug,
+        w.thumbnail_url,
+        wr.resolution_name,
+        wr.width,
+        wr.height,
+        u.id as user_id,
+        u.name as user_name,
+        u.email as user_email
+       FROM downloads d
+       JOIN wallpapers w ON d.wallpaper_id = w.id
+       JOIN wallpaper_resolutions wr ON d.resolution_id = wr.id
+       LEFT JOIN users u ON d.user_id = u.id
+       ORDER BY d.downloaded_at DESC
+       LIMIT ?`,
+      [limit]
+    );
+    return rows;
+  }
 }

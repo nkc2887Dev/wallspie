@@ -11,6 +11,7 @@ router.get('/', validatePagination, asyncHandler(WallpaperController.getAll));
 router.get('/featured', asyncHandler(WallpaperController.getFeatured));
 router.get('/trending', asyncHandler(WallpaperController.getTrending));
 router.get('/search', validatePagination, asyncHandler(WallpaperController.search));
+router.get('/:id/resolutions', asyncHandler(WallpaperController.getResolutions));
 router.get('/:slug', optionalAuth, asyncHandler(WallpaperController.getBySlug));
 
 // Admin routes

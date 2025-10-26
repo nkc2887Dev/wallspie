@@ -7,24 +7,24 @@ const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
   title: {
-    default: "WellPie - Free 4K Wallpapers & HD Backgrounds",
-    template: "%s | WellPie"
+    default: "WallsPie - Free 4K Wallpapers & HD Backgrounds",
+    template: "%s | WallsPie"
   },
   description: "Download free 4K, HD, and mobile wallpapers. Browse thousands of high-quality images across 20+ categories. No login required.",
   keywords: ["wallpapers", "4k wallpapers", "hd wallpapers", "free wallpapers", "backgrounds", "desktop wallpapers", "mobile wallpapers"],
-  authors: [{ name: "WellPie Team" }],
-  creator: "WellPie",
+  authors: [{ name: "WallsPie Team" }],
+  creator: "WallsPie",
   openGraph: {
     type: "website",
     locale: "en_US",
-    url: "https://wellpie.com",
-    title: "WellPie - Free 4K Wallpapers & HD Backgrounds",
+    url: "https://wallspie.com",
+    title: "WallsPie - Free 4K Wallpapers & HD Backgrounds",
     description: "Download free 4K, HD, and mobile wallpapers. Browse thousands of high-quality images.",
-    siteName: "WellPie",
+    siteName: "WallsPie",
   },
   twitter: {
     card: "summary_large_image",
-    title: "WellPie - Free 4K Wallpapers",
+    title: "WallsPie - Free 4K Wallpapers",
     description: "Download free 4K, HD, and mobile wallpapers",
   },
   robots: {

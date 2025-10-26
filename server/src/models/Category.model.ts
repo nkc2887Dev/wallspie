@@ -174,4 +174,56 @@ export class CategoryModel {
     `);
     return rows as Category[];
   }
+
+  // Get wallpapers by category with pagination
+  static async getWallpapers(
+    categoryId: number,
+    page: number = 1,
+    limit: number = 12
+  ): Promise<{ wallpapers: any[]; total: number; page: number; totalPages: number }> {
+    const offset = (page - 1) * limit;
+
+    // Get total count
+    const [countRows] = await pool.query<RowDataPacket[]>(
+      `SELECT COUNT(DISTINCT w.id) as total
+       FROM wallpapers w
+       JOIN wallpaper_categories wc ON w.id = wc.wallpaper_id
+       WHERE wc.category_id = ? AND w.is_active = 1`,
+      [categoryId]
+    );
+    const total = countRows[0].total;
+
+    // Get wallpapers
+    const [wallpaperRows] = await pool.query<RowDataPacket[]>(
+      `SELECT DISTINCT
+        w.id,
+        w.title,
+        w.slug,
+        w.description,
+        w.original_url,
+        w.thumbnail_url,
+        w.medium_url,
+        w.primary_color,
+        w.tags,
+        w.source,
+        w.is_featured,
+        w.view_count,
+        w.download_count,
+        w.favorite_count,
+        w.created_at
+       FROM wallpapers w
+       JOIN wallpaper_categories wc ON w.id = wc.wallpaper_id
+       WHERE wc.category_id = ? AND w.is_active = 1
+       ORDER BY w.created_at DESC
+       LIMIT ? OFFSET ?`,
+      [categoryId, limit, offset]
+    );
+
+    return {
+      wallpapers: wallpaperRows,
+      total,
+      page,
+      totalPages: Math.ceil(total / limit),
+    };
+  }
 }

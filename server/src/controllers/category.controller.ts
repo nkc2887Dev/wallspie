@@ -209,4 +209,43 @@ export class CategoryController {
       });
     }
   }
+
+  // Get wallpapers by category (public)
+  static async getWallpapers(req: Request, res: Response): Promise<void> {
+    try {
+      const { id } = req.params;
+      const page = parseInt(req.query.page as string) || 1;
+      const limit = parseInt(req.query.limit as string) || 12;
+
+      // Check if category exists
+      const category = await CategoryModel.findById(parseInt(id));
+      if (!category) {
+        res.status(404).json({
+          success: false,
+          error: 'Category not found',
+        });
+        return;
+      }
+
+      // Get wallpapers
+      const result = await CategoryModel.getWallpapers(parseInt(id), page, limit);
+
+      res.json({
+        success: true,
+        data: result.wallpapers,
+        pagination: {
+          page: result.page,
+          limit,
+          total: result.total,
+          totalPages: result.totalPages,
+        },
+      });
+    } catch (error: any) {
+      console.error('Get category wallpapers error:', error);
+      res.status(500).json({
+        success: false,
+        error: 'Failed to fetch wallpapers',
+      });
+    }
+  }
 }
