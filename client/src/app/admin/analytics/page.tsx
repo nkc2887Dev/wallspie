@@ -34,7 +34,7 @@ export default function AdminAnalyticsPage() {
   };
 
   const getTotalDownloads = () => {
-    return deviceStats.reduce((sum, stat) => sum + stat.downloads, 0);
+    return deviceStats.reduce((sum, stat) => sum + stat.count, 0);
   };
 
   const getPercentage = (value: number, total: number) => {
@@ -174,17 +174,17 @@ export default function AdminAnalyticsPage() {
                             <p className="text-sm font-medium text-gray-900 capitalize">
                               {stat.device_type}
                             </p>
-                            <p className="text-sm text-gray-500">{stat.downloads} downloads</p>
+                            <p className="text-sm text-gray-500">{stat.count || 0} downloads</p>
                           </div>
                         </div>
                         <span className="text-sm font-semibold text-gray-900">
-                          {getPercentage(stat.downloads, getTotalDownloads())}%
+                          {stat.percentage || getPercentage(stat.count, getTotalDownloads())}%
                         </span>
                       </div>
                       <div className="w-full bg-gray-200 rounded-full h-2">
                         <div
                           className="bg-purple-600 h-2 rounded-full transition-all"
-                          style={{ width: `${getPercentage(stat.downloads, getTotalDownloads())}%` }}
+                          style={{ width: `${stat.percentage || getPercentage(stat.count, getTotalDownloads())}%` }}
                         ></div>
                       </div>
                     </div>
@@ -209,7 +209,7 @@ export default function AdminAnalyticsPage() {
                           </div>
                           <div>
                             <p className="text-sm font-medium text-gray-900">{stat.category_name}</p>
-                            <p className="text-sm text-gray-500">{stat.downloads} downloads</p>
+                            <p className="text-sm text-gray-500">{stat.total_downloads || 0} downloads</p>
                           </div>
                         </div>
                       </div>
@@ -217,7 +217,7 @@ export default function AdminAnalyticsPage() {
                         <div
                           className="bg-pink-600 h-2 rounded-full transition-all"
                           style={{
-                            width: `${getPercentage(stat.downloads, categoryStats[0]?.downloads || 1)}%`,
+                            width: `${getPercentage(stat.total_downloads, categoryStats[0]?.total_downloads || 1)}%`,
                           }}
                         ></div>
                       </div>

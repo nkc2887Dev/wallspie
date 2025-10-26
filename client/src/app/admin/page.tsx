@@ -7,6 +7,9 @@ interface StatsData {
   totalWallpapers: number;
   totalDownloads: number;
   totalUsers: number;
+  adminUsers: number;
+  registeredUsers: number;
+  guestUsers: number;
   totalCategories: number;
 }
 
@@ -104,16 +107,40 @@ export default function AdminDashboard() {
           </div>
         </div>
 
-        <div className="bg-white rounded-lg shadow p-6">
+        <div className="bg-white rounded-lg shadow p-6 group relative">
           <div className="flex items-center justify-between">
             <div>
               <p className="text-gray-500 text-sm font-medium">Total Users</p>
               <p className="text-3xl font-bold text-gray-900 mt-2">{stats?.totalUsers || 0}</p>
+              <p className="text-xs text-gray-400 mt-1">(Excluding owner)</p>
             </div>
             <div className="bg-purple-100 rounded-full p-3">
               <svg className="w-8 h-8 text-purple-600" fill="currentColor" viewBox="0 0 20 20">
                 <path d="M9 6a3 3 0 11-6 0 3 3 0 016 0zM17 6a3 3 0 11-6 0 3 3 0 016 0zM12.93 17c.046-.327.07-.66.07-1a6.97 6.97 0 00-1.5-4.33A5 5 0 0119 16v1h-6.07zM6 11a5 5 0 015 5v1H1v-1a5 5 0 015-5z" />
               </svg>
+            </div>
+          </div>
+
+          {/* Tooltip */}
+          <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 hidden group-hover:block z-10">
+            <div className="bg-gray-900 text-white text-sm rounded-lg py-3 px-4 shadow-lg min-w-[200px]">
+              <div className="space-y-2">
+                <div className="flex items-center justify-between">
+                  <span className="text-gray-300">Admins:</span>
+                  <span className="font-semibold text-blue-400">{stats?.adminUsers || 0}</span>
+                </div>
+                <div className="flex items-center justify-between">
+                  <span className="text-gray-300">Registered:</span>
+                  <span className="font-semibold text-green-400">{stats?.registeredUsers || 0}</span>
+                </div>
+                <div className="flex items-center justify-between">
+                  <span className="text-gray-300">Guests:</span>
+                  <span className="font-semibold text-yellow-400">{stats?.guestUsers || 0}</span>
+                </div>
+              </div>
+              <div className="absolute top-full left-1/2 transform -translate-x-1/2 -mt-1">
+                <div className="border-8 border-transparent border-t-gray-900"></div>
+              </div>
             </div>
           </div>
         </div>

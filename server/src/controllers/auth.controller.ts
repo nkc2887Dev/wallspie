@@ -97,7 +97,6 @@ export class AuthController {
 
       // Find user
       const user = await UserModel.findByEmail(email);
-      console.log('user: ', user);
       if (!user) {
         res.status(401).json({
           success: false,
@@ -125,7 +124,6 @@ export class AuthController {
       }
 
       const isValidPassword = await PasswordUtil.compare(password, user.password);
-      console.log('isValidPassword: ', isValidPassword);
       if (!isValidPassword) {
         res.status(401).json({
           success: false,

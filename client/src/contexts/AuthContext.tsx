@@ -51,6 +51,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     api.setToken(null);
     localStorage.removeItem('accessToken');
     localStorage.removeItem('refreshToken');
+    sessionStorage.removeItem('redirectAfterLogin');
     setUser(null);
     // Create new guest user
     createGuest();
@@ -108,6 +109,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     api.setToken(null);
     localStorage.removeItem('accessToken');
     localStorage.removeItem('refreshToken');
+    sessionStorage.removeItem('redirectAfterLogin');
     setUser(null);
     // Create new guest user
     createGuest();

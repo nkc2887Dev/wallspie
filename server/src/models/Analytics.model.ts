@@ -88,10 +88,13 @@ export class AnalyticsModel {
 
   // Get overview stats
   static async getOverview(): Promise<AnalyticsOverview> {
-    // Get total stats
+    // Get total stats (excluding owner from user count)
     const [totals] = await pool.query<RowDataPacket[]>(`
       SELECT
-        (SELECT COUNT(*) FROM users WHERE user_type != 3) as totalUsers,
+        (SELECT COUNT(*) FROM users WHERE is_owner = 0 AND is_active = 1) as totalUsers,
+        (SELECT COUNT(*) FROM users WHERE user_type = 1 AND is_owner = 0 AND is_active = 1) as adminUsers,
+        (SELECT COUNT(*) FROM users WHERE user_type = 2 AND is_active = 1) as registeredUsers,
+        (SELECT COUNT(*) FROM users WHERE user_type = 3) as guestUsers,
         (SELECT COUNT(*) FROM wallpapers WHERE is_active = 1) as totalWallpapers,
         (SELECT COUNT(*) FROM categories WHERE is_active = 1) as totalCategories,
         (SELECT SUM(download_count) FROM wallpapers) as totalDownloads,
@@ -107,6 +110,9 @@ export class AnalyticsModel {
 
     return {
       totalUsers: totals[0].totalUsers || 0,
+      adminUsers: totals[0].adminUsers || 0,
+      registeredUsers: totals[0].registeredUsers || 0,
+      guestUsers: totals[0].guestUsers || 0,
       totalWallpapers: totals[0].totalWallpapers || 0,
       totalCategories: totals[0].totalCategories || 0,
       totalDownloads: totals[0].totalDownloads || 0,

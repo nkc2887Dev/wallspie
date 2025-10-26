@@ -208,6 +208,9 @@ export interface AnalyticsOverview {
   totalWallpapers: number;
   totalCategories: number;
   totalUsers: number;
+  adminUsers: number;
+  registeredUsers: number;
+  guestUsers: number;
   todayVisitors: number;
   todayDownloads: number;
 }

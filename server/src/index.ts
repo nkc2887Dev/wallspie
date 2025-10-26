@@ -11,6 +11,7 @@ import wallpaperRoutes from './routes/wallpaper.routes';
 import downloadRoutes from './routes/download.routes';
 import favoriteRoutes from './routes/favorite.routes';
 import analyticsRoutes from './routes/analytics.routes';
+import userRoutes from './routes/user.routes';
 
 dotenv.config();
 
@@ -30,7 +31,7 @@ app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 // Request logging in development
 if (process.env.NODE_ENV === 'development') {
   app.use((req, res, next) => {
-    console.log(`${req.method} ${req.path}`);
+    console.info(`${req.method} ${req.path}`);
     next();
   });
 }
@@ -48,6 +49,7 @@ app.get('/', (req: Request, res: Response) => {
       downloads: '/api/v1/downloads',
       favorites: '/api/v1/favorites',
       analytics: '/api/v1/admin/analytics',
+      users: '/api/v1/admin/users',
       health: '/health',
     },
   });
@@ -80,6 +82,7 @@ app.use('/api/v1/wallpapers', wallpaperRoutes);
 app.use('/api/v1/downloads', downloadRoutes);
 app.use('/api/v1/favorites', favoriteRoutes);
 app.use('/api/v1/admin/analytics', analyticsRoutes);
+app.use('/api/v1/admin/users', userRoutes);
 
 // 404 handler
 app.use(notFoundHandler);
@@ -89,7 +92,7 @@ app.use(errorHandler);
 
 // Start server
 app.listen(PORT, async () => {
-  console.log(`
+  console.info(`
 ╔════════════════════════════════════════╗
 ║                                        ║
 ║       🎨 WallsPie API Server 🎨        ║
@@ -104,7 +107,7 @@ app.listen(PORT, async () => {
   // Test database connection
   try {
     await testConnection();
-    console.log('✅ Database connection: SUCCESS\n');
+    console.info('✅ Database connection: SUCCESS\n');
   } catch (error) {
     console.error('❌ Database connection: FAILED');
     console.error('   Please check your .env configuration\n');
@@ -113,12 +116,12 @@ app.listen(PORT, async () => {
 
 // Graceful shutdown
 process.on('SIGTERM', () => {
-  console.log('\n🛑 SIGTERM received, shutting down gracefully...');
+  console.info('\n🛑 SIGTERM received, shutting down gracefully...');
   process.exit(0);
 });
 
 process.on('SIGINT', () => {
-  console.log('\n🛑 SIGINT received, shutting down gracefully...');
+  console.info('\n🛑 SIGINT received, shutting down gracefully...');
   process.exit(0);
 });
 

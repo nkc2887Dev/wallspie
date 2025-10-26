@@ -276,6 +276,42 @@ class ApiClient {
     const query = wallpaperId ? `?wallpaper=${wallpaperId}` : '';
     return this.request<any[]>(`/admin/analytics/resolutions${query}`);
   }
+
+  // Users (Admin)
+  async getUsers(params: { page?: number; limit?: number; userType?: number } = {}) {
+    const queryParams = new URLSearchParams();
+    if (params.page) queryParams.append('page', params.page.toString());
+    if (params.limit) queryParams.append('limit', params.limit.toString());
+    if (params.userType) queryParams.append('userType', params.userType.toString());
+
+    return this.request<any[]>(`/admin/users?${queryParams.toString()}`);
+  }
+
+  async getUserById(id: number) {
+    return this.request<any>(`/admin/users/${id}`);
+  }
+
+  async createUser(data: { name: string; email: string; password?: string; user_type?: number }) {
+    return this.request<any>('/admin/users', {
+      method: 'POST',
+      body: JSON.stringify(data),
+    });
+  }
+
+  async updateUser(id: number, data: { name?: string; email?: string; password?: string; user_type?: number; is_active?: number }) {
+    return this.request<any>(`/admin/users/${id}`, {
+      method: 'PUT',
+      body: JSON.stringify(data),
+    });
+  }
+
+  async deleteUser(id: number) {
+    return this.request(`/admin/users/${id}`, { method: 'DELETE' });
+  }
+
+  async getUserStats() {
+    return this.request<any>('/admin/users/stats');
+  }
 }
 
 export const api = new ApiClient(API_BASE_URL);

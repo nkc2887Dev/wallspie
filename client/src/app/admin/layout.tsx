@@ -67,6 +67,12 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
                   Categories
                 </Link>
                 <Link
+                  href="/admin/users"
+                  className="px-3 py-2 rounded-md text-sm font-medium hover:bg-gray-800 transition"
+                >
+                  Users
+                </Link>
+                <Link
                   href="/admin/analytics"
                   className="px-3 py-2 rounded-md text-sm font-medium hover:bg-gray-800 transition"
                 >

@@ -107,11 +107,15 @@ export class UserModel {
       fields.push('name = ?');
       values.push(updates.name);
     }
+    if (updates.password) {
+      fields.push('password = ?');
+      values.push(updates.password);
+    }
     if (updates.is_active !== undefined) {
       fields.push('is_active = ?');
       values.push(updates.is_active);
     }
-    if (updates.user_type) {
+    if (updates.user_type !== undefined) {
       fields.push('user_type = ?');
       values.push(updates.user_type);
     }
@@ -123,6 +127,14 @@ export class UserModel {
       `UPDATE users SET ${fields.join(', ')} WHERE id = ?`,
       values
     );
+  }
+
+  // Update password
+  static async updatePassword(userId: number, hashedPassword: string): Promise<void> {
+    await pool.query('UPDATE users SET password = ? WHERE id = ?', [
+      hashedPassword,
+      userId,
+    ]);
   }
 
   // Delete user (soft delete by deactivating)

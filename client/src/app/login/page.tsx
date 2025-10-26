@@ -6,10 +6,11 @@ import { useRouter } from 'next/navigation';
 import { useAuth } from '@/contexts/AuthContext';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
+import { USER_TYPE } from '@/constants';
 
 export default function LoginPage() {
   const router = useRouter();
-  const { login } = useAuth();
+  const { login, user } = useAuth();
   const [formData, setFormData] = useState({
     email: '',
     password: '',
@@ -33,7 +34,7 @@ export default function LoginPage() {
 
     try {
       await login(formData.email, formData.password);
-
+      
       // Check if there's a stored redirect path
       const redirectPath = sessionStorage.getItem('redirectAfterLogin');
       if (redirectPath) {
