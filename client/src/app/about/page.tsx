@@ -192,7 +192,7 @@ export default function AboutPage() {
             </p>
             <a
               href="/"
-              className="inline-block bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white px-8 py-4 rounded-lg font-bold text-lg transition-all shadow-lg hover:shadow-xl transform hover:-translate-y-1"
+              className="bg-white text-purple-600 px-8 py-4 rounded-lg font-bold text-lg hover:bg-gray-100 transition-colors  border-2 border-white/30 shadow-lg hover:shadow-xl"
             >
               Browse Wallpapers
             </a>

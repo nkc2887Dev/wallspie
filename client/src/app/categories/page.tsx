@@ -8,7 +8,6 @@ import CategoryCard from '@/components/CategoryCard';
 
 export default function CategoriesPage() {
   const [categories, setCategories] = useState<any[]>([]);
-  console.log('categories: ', categories);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {

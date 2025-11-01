@@ -10,6 +10,7 @@ interface User {
   user_type: number;
   is_owner: number;
   is_guest?: boolean;
+  created_at?: string;
 }
 
 interface AuthContextType {

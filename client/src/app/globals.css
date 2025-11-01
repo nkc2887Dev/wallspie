@@ -49,3 +49,18 @@ body {
   scrollbar-width: thin;
   scrollbar-color: #a855f7 #f1f1f1;
 }
+
+/* Animated gradient for footer */
+@keyframes gradient-x {
+  0%, 100% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+}
+
+.animate-gradient-x {
+  background-size: 200% 200%;
+  animation: gradient-x 15s ease infinite;
+}
