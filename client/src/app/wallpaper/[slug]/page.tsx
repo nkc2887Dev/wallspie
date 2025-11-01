@@ -8,6 +8,7 @@ import { useAuth } from '@/contexts/AuthContext';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import WallpaperGrid from '@/components/WallpaperGrid';
+import Head from './head';
 
 export default function WallpaperDetailPage() {
   const params = useParams();
@@ -21,21 +22,43 @@ export default function WallpaperDetailPage() {
   const [isFavorited, setIsFavorited] = useState(false);
   const [loading, setLoading] = useState(true);
   const [downloading, setDownloading] = useState(false);
+  const [deviceType, setDeviceType] = useState<'desktop' | 'mobile'>('desktop');
 
   useEffect(() => {
     const loadWallpaperData = async () => {
       try {
         setLoading(true);
         const wallpaperResponse = await api.getWallpaperBySlug(slug);
-        setWallpaper(wallpaperResponse.data);
+        const wallpaperData = wallpaperResponse.data;
+        setWallpaper(wallpaperData);
 
-        const resolutionsResponse = await api.getWallpaperResolutions(wallpaperResponse.data.id);
-        setResolutions(resolutionsResponse.data || []);
+        // Use resolutions from wallpaper data if available, otherwise fetch separately
+        let allResolutions = wallpaperData?.resolutions || [];
 
-        // Set default resolution to 4K or first available
-        const defaultRes =
-          resolutionsResponse.data?.find((r: any) => r.name === '4K') ||
-          resolutionsResponse.data?.[0];
+        // If no resolutions in main response, fetch them separately
+        if (allResolutions.length === 0) {
+          try {
+            const resolutionsResponse = await api.getWallpaperResolutions(wallpaperData.id);
+            allResolutions = resolutionsResponse.data || [];
+          } catch (error) {
+            console.error('Error fetching resolutions:', error);
+          }
+        }
+
+        setResolutions(allResolutions);
+
+        // Categorize resolutions
+        const desktopResolutions = allResolutions.filter((r: any) =>
+          r.width >= r.height || r.width >= 1920
+        );
+        const mobileResolutions = allResolutions.filter((r: any) =>
+          r.height > r.width && r.width < 1920
+        );
+
+        // Set default resolution based on device type
+        const defaultRes = desktopResolutions.find((r: any) =>
+          (r.name === '4K' || r.resolution_name === '4K')
+        ) || desktopResolutions[0] || allResolutions[0];
         setSelectedResolution(defaultRes);
 
         // Load related wallpapers from same categories
@@ -107,6 +130,17 @@ export default function WallpaperDetailPage() {
     }
   };
 
+  // Categorize resolutions by device type
+  const desktopResolutions = resolutions.filter((r: any) =>
+    r.width >= r.height || r.width >= 1920
+  );
+  const mobileResolutions = resolutions.filter((r: any) =>
+    r.height > r.width && r.width < 1920
+  );
+
+  // Get filtered resolutions based on selected device type
+  const filteredResolutions = deviceType === 'desktop' ? desktopResolutions : mobileResolutions;
+
   if (loading) {
     return (
       <>
@@ -142,6 +176,7 @@ export default function WallpaperDetailPage() {
 
   return (
     <>
+      <Head />
       <Header />
       <main className="min-h-screen bg-gray-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
@@ -150,9 +185,10 @@ export default function WallpaperDetailPage() {
             <div className="lg:col-span-2">
               <div className="relative overflow-hidden rounded-lg bg-gray-200 aspect-video mb-6">
                 <Image
-                  src={wallpaper.full_url || wallpaper.thumbnail_url}
+                  src={wallpaper.full_url || wallpaper.medium_url || wallpaper.thumbnail_url}
                   alt={wallpaper.title}
                   fill
+                  quality={100}
                   className="object-cover"
                   sizes="(max-width: 1024px) 100vw, 66vw"
                   priority
@@ -212,32 +248,101 @@ export default function WallpaperDetailPage() {
                   <p className="text-gray-600 mb-6">{wallpaper.description}</p>
                 )}
 
+                {/* Device Type Selector */}
+                <div className="mb-6">
+                  <h3 className="text-sm font-semibold text-gray-700 mb-3">Device Type</h3>
+                  <div className="grid grid-cols-2 gap-2">
+                    <button
+                      onClick={() => {
+                        setDeviceType('desktop');
+                        // Auto-select first desktop resolution
+                        if (desktopResolutions.length > 0) {
+                          setSelectedResolution(desktopResolutions[0]);
+                        }
+                      }}
+                      className={`flex items-center justify-center px-4 py-3 rounded-lg border-2 font-semibold transition ${
+                        deviceType === 'desktop'
+                          ? 'border-purple-600 bg-purple-50 text-purple-700'
+                          : 'border-gray-200 text-gray-700 hover:border-purple-300'
+                      }`}
+                    >
+                      <svg className="w-5 h-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                      </svg>
+                      Desktop
+                    </button>
+                    <button
+                      onClick={() => {
+                        setDeviceType('mobile');
+                        // Auto-select first mobile resolution
+                        if (mobileResolutions.length > 0) {
+                          setSelectedResolution(mobileResolutions[0]);
+                        }
+                      }}
+                      className={`flex items-center justify-center px-4 py-3 rounded-lg border-2 font-semibold transition ${
+                        deviceType === 'mobile'
+                          ? 'border-purple-600 bg-purple-50 text-purple-700'
+                          : 'border-gray-200 text-gray-700 hover:border-purple-300'
+                      }`}
+                    >
+                      <svg className="w-5 h-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z" />
+                      </svg>
+                      Mobile
+                    </button>
+                  </div>
+                </div>
+
                 {/* Resolution Selector */}
                 <div className="mb-6">
-                  <h3 className="text-sm font-semibold text-gray-700 mb-3">Select Resolution</h3>
-                  <div className="space-y-2">
-                    {resolutions.map((resolution) => (
-                      <button
-                        key={resolution.id}
-                        onClick={() => setSelectedResolution(resolution)}
-                        className={`w-full text-left px-4 py-3 rounded-lg border-2 transition ${
-                          selectedResolution?.id === resolution.id
-                            ? 'border-purple-600 bg-purple-50'
-                            : 'border-gray-200 hover:border-purple-300'
-                        }`}
-                      >
-                        <div className="flex items-center justify-between">
-                          <span className="font-semibold">{resolution.name}</span>
-                          <span className="text-sm text-gray-500">
-                            {resolution.width}x{resolution.height}
-                          </span>
-                        </div>
-                        <div className="text-xs text-gray-500 mt-1">
-                          {(resolution.file_size / 1024 / 1024).toFixed(2)} MB
-                        </div>
-                      </button>
-                    ))}
-                  </div>
+                  <h3 className="text-sm font-semibold text-gray-700 mb-3">
+                    Select Resolution
+                    <span className="text-xs font-normal text-gray-500 ml-2">
+                      ({filteredResolutions.length} available)
+                    </span>
+                  </h3>
+                  {filteredResolutions.length > 0 ? (
+                    <div className="space-y-2 max-h-[40vh] sm:max-h-[50vh] lg:max-h-[60vh] overflow-y-auto pr-2 custom-scrollbar">
+                      {filteredResolutions.map((resolution) => (
+                        <button
+                          key={resolution.id}
+                          onClick={() => setSelectedResolution(resolution)}
+                          className={`w-full text-left px-4 py-3 rounded-lg border-2 transition ${
+                            selectedResolution?.id === resolution.id
+                              ? 'border-purple-600 bg-purple-50'
+                              : 'border-gray-200 hover:border-purple-300'
+                          }`}
+                        >
+                          <div className="flex items-center justify-between">
+                            <span className="text-gray-600 font-semibold">{resolution.name || resolution.resolution_name}</span>
+                            <span className="text-sm text-gray-500">
+                              {resolution.width}x{resolution.height}
+                            </span>
+                          </div>
+                          <div className="flex items-center justify-between mt-1">
+                            <span className="text-xs text-gray-500">
+                              {(resolution.file_size / 1024 / 1024).toFixed(2)} MB
+                            </span>
+                            <span className="text-xs text-purple-600 font-medium">
+                              {resolution.width >= 3840 ? '4K' :
+                               resolution.width >= 2560 ? 'QHD' :
+                               resolution.width >= 1920 ? 'Full HD' : 'HD'}
+                            </span>
+                          </div>
+                        </button>
+                      ))}
+                    </div>
+                  ) : (
+                    <div className="text-center py-8 px-4 bg-gray-50 rounded-lg border-2 border-dashed border-gray-300">
+                      <svg className="mx-auto h-12 w-12 text-gray-400 mb-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                      </svg>
+                      <p className="text-sm text-gray-600 font-medium mb-1">No {deviceType} resolutions available</p>
+                      <p className="text-xs text-gray-500">
+                        Try switching to {deviceType === 'desktop' ? 'mobile' : 'desktop'} view
+                      </p>
+                    </div>
+                  )}
                 </div>
 
                 {/* Download Button */}

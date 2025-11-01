@@ -20,6 +20,7 @@ export default function CategoryCard({ category }: CategoryCardProps) {
             src={category.thumbnail_url}
             alt={category.name}
             fill
+            quality={95}
             className="object-cover group-hover:scale-105 transition-transform duration-300"
             sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
           />

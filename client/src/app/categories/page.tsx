@@ -8,15 +8,43 @@ import CategoryCard from '@/components/CategoryCard';
 
 export default function CategoriesPage() {
   const [categories, setCategories] = useState<any[]>([]);
+  console.log('categories: ', categories);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const loadCategories = async () => {
       try {
         const response = await api.getCategories();
-        setCategories(response.data || []);
+        if(response?.data && response.data.length > 0){
+          const filteredCategories = response.data.filter((dt)=> dt.wallpaper_count > 0);
+
+          // Fetch first wallpaper for each category to use as thumbnail
+          const categoriesWithThumbnails = await Promise.all(
+            filteredCategories.map(async (category) => {
+              if (!category.thumbnail_url) {
+                try {
+                  const wallpapersRes = await api.getWallpapersByCategory(category.id, { limit: 1 });
+                  if (wallpapersRes?.data && wallpapersRes.data.length > 0) {
+                    return {
+                      ...category,
+                      thumbnail_url: wallpapersRes.data[0].thumbnail_url || wallpapersRes.data[0].medium_url
+                    };
+                  }
+                } catch (err) {
+                  console.error(`Error loading thumbnail for category ${category.name}:`, err);
+                }
+              }
+              return category;
+            })
+          );
+
+          setCategories(categoriesWithThumbnails);
+        } else {
+          setCategories([]);
+        }
       } catch (error) {
         console.error('Error loading categories:', error);
+        setCategories([]);
       } finally {
         setLoading(false);
       }

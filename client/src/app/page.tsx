@@ -26,7 +26,34 @@ export default function Home() {
 
         setFeaturedWallpapers(featured.data || []);
         setTrendingWallpapers(trending.data || []);
-        setCategories(cats.data || []);
+
+        if(cats?.data && cats.data.length > 0){
+          const filteredCategories = cats.data.filter((dt)=> dt.wallpaper_count > 0);
+
+          // Fetch first wallpaper for each category to use as thumbnail
+          const categoriesWithThumbnails = await Promise.all(
+            filteredCategories.map(async (category) => {
+              if (!category.thumbnail_url) {
+                try {
+                  const wallpapersRes = await api.getWallpapersByCategory(category.id, { limit: 1 });
+                  if (wallpapersRes?.data && wallpapersRes.data.length > 0) {
+                    return {
+                      ...category,
+                      thumbnail_url: wallpapersRes.data[0].thumbnail_url || wallpapersRes.data[0].medium_url
+                    };
+                  }
+                } catch (err) {
+                  console.error(`Error loading thumbnail for category ${category.name}:`, err);
+                }
+              }
+              return category;
+            })
+          );
+
+          setCategories(categoriesWithThumbnails);
+        } else {
+          setCategories([]);
+        }
       } catch (error) {
         console.error('Error loading homepage data:', error);
       } finally {
@@ -40,12 +67,12 @@ export default function Home() {
   return (
     <>
       <Header />
-      <main>
+      <main itemScope itemType="https://schema.org/WebPage">
         {/* Hero Section */}
-        <section className="relative bg-gradient-to-br from-blue-600 via-purple-600 to-pink-500 text-white">
+        <section className="relative bg-gradient-to-br from-blue-600 via-purple-600 to-pink-500 text-white" itemScope itemType="https://schema.org/WPHeader">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-24 md:py-32">
             <div className="text-center">
-              <h1 className="text-4xl md:text-6xl font-bold mb-6">
+              <h1 className="text-4xl md:text-6xl font-bold mb-6" itemProp="headline">
                 Free 4K Wallpapers & HD Backgrounds
               </h1>
               <p className="text-xl md:text-2xl text-white/90 mb-8 max-w-3xl mx-auto">
@@ -55,13 +82,13 @@ export default function Home() {
               <div className="flex flex-col sm:flex-row gap-4 justify-center">
                 <Link
                   href="/categories"
-                  className="bg-white text-purple-600 px-8 py-4 rounded-lg font-bold text-lg hover:bg-gray-100 transition-colors"
+                  className="bg-white text-purple-600 px-8 py-4 rounded-lg font-bold text-lg hover:bg-gray-100 transition-colors  border-2 border-white/30 shadow-lg hover:shadow-xl"
                 >
                   Browse Categories
                 </Link>
                 <Link
                   href="/search"
-                  className="bg-purple-700/50 backdrop-blur text-white px-8 py-4 rounded-lg font-bold text-lg hover:bg-purple-700/70 transition-colors border-2 border-white/30"
+                  className="bg-white text-purple-600 px-8 py-4 rounded-lg font-bold text-lg hover:bg-gray-100 transition-color border-2 border-white/30 shadow-lg hover:shadow-xl"
                 >
                   Search Wallpapers
                 </Link>
@@ -71,21 +98,40 @@ export default function Home() {
         </section>
 
         {/* Featured Wallpapers */}
-        <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
-          <div className="flex items-center justify-between mb-8">
-            <h2 className="text-3xl font-bold text-gray-900">Featured Wallpapers</h2>
-            <Link href="/search?featured=1" className="text-purple-600 hover:text-purple-700 font-semibold">
-              View All →
-            </Link>
-          </div>
-          {loading ? (
-            <LoadingGrid count={8} />
-          ) : featuredWallpapers.length > 0 ? (
-            <WallpaperGrid wallpapers={featuredWallpapers} />
-          ) : (
-            <p className="text-gray-500 text-center py-12">No featured wallpapers available yet.</p>
-          )}
-        </section>
+        {(loading || featuredWallpapers.length > 0) && (
+          <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
+            <div className="flex items-center justify-between mb-8">
+              <h2 className="text-3xl font-bold text-gray-900">Featured Wallpapers</h2>
+              <Link href="/search?featured=1" className="text-purple-600 hover:text-purple-700 font-semibold">
+                View All →
+              </Link>
+            </div>
+            {loading ? (
+              <LoadingGrid count={8} />
+            ) : (
+              <WallpaperGrid wallpapers={featuredWallpapers} />
+            )}
+          </section>
+        )}
+
+        {/* Trending Wallpapers */}
+        {(loading || trendingWallpapers.length > 0) && (
+          <section className="bg-gray-50 py-16">
+            <div className='max-w-7xl mx-auto px-4 sm:px-6 lg:px-8'>
+            <div className="flex items-center justify-between mb-8">
+              <h2 className="text-3xl font-bold text-gray-900">Trending Now</h2>
+              <Link href="/search?sort=trending" className="text-purple-600 hover:text-purple-700 font-semibold">
+                View All →
+              </Link>
+            </div>
+            {loading ? (
+              <LoadingGrid count={8} />
+            ) : (
+              <WallpaperGrid wallpapers={trendingWallpapers} />
+            )}
+            </div>
+          </section>
+        )}
 
         {/* Popular Categories */}
         <section className="bg-gray-50 py-16">
@@ -116,25 +162,8 @@ export default function Home() {
           </div>
         </section>
 
-        {/* Trending Wallpapers */}
-        <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
-          <div className="flex items-center justify-between mb-8">
-            <h2 className="text-3xl font-bold text-gray-900">Trending Now</h2>
-            <Link href="/search?sort=trending" className="text-purple-600 hover:text-purple-700 font-semibold">
-              View All →
-            </Link>
-          </div>
-          {loading ? (
-            <LoadingGrid count={8} />
-          ) : trendingWallpapers.length > 0 ? (
-            <WallpaperGrid wallpapers={trendingWallpapers} />
-          ) : (
-            <p className="text-gray-500 text-center py-12">No trending wallpapers available yet.</p>
-          )}
-        </section>
-
         {/* Call to Action */}
-        {/* <section className="bg-gradient-to-r from-purple-600 to-pink-600 text-white py-16">
+        {/* <section className="bg-gradient-to-r from-purple-600 to-pink-600 text-white bg-gray-50 py-16">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
             <h2 className="text-3xl md:text-4xl font-bold mb-4">
               Join Our Community

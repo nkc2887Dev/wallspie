@@ -7,9 +7,10 @@ import Link from 'next/link';
 export default function Footer() {
     const { user, isAuthenticated } = useAuth();
     const isGuest = user?.user_type === USER_TYPE.GUEST;
+    const currentYear = new Date().getFullYear();
 
   return (
-    <footer className="bg-gray-900 text-white mt-20">
+    <footer className="bg-gray-900 text-white">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
           <div>
@@ -24,12 +25,12 @@ export default function Footer() {
             <ul className="space-y-2">
               <li><Link href="/categories" className="text-gray-400 hover:text-white">Categories</Link></li>
               <li><Link href="/search" className="text-gray-400 hover:text-white">Search</Link></li>
-              <li><Link href="/" className="text-gray-400 hover:text-white">Featured</Link></li>
-              <li><Link href="/" className="text-gray-400 hover:text-white">Trending</Link></li>
+              {/* <li><Link href="/" className="text-gray-400 hover:text-white">Featured</Link></li>
+              <li><Link href="/search?sort=trending" className="text-gray-400 hover:text-white">Trending</Link></li> */}
             </ul>
           </div>
 
-          <div>
+          {/* <div>
             <h4 className="text-lg font-semibold mb-4">Account</h4>
             <ul className="space-y-2">
               <li><Link href="/login" className="text-gray-400 hover:text-white">Login</Link></li>
@@ -38,7 +39,7 @@ export default function Footer() {
                   <li><Link href="/favorites" className="text-gray-700 hover:text-blue-600 px-3 py-2 text-sm font-medium">Favorites</Link></li>
               )}
             </ul>
-          </div>
+          </div> */}
 
           <div>
             <h4 className="text-lg font-semibold mb-4">Info</h4>
@@ -52,7 +53,7 @@ export default function Footer() {
         </div>
 
         <div className="border-t border-gray-800 mt-8 pt-8 text-center text-gray-400">
-          <p>&copy; 2025 WallsPie. All rights reserved.</p>
+          <p>&copy; {currentYear} WallsPie. All rights reserved.</p>
         </div>
       </div>
     </footer>

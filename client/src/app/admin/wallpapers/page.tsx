@@ -111,6 +111,7 @@ export default function AdminWallpapersPage() {
                             src={wallpaper.thumbnail_url}
                             alt={wallpaper.title}
                             fill
+                            quality={95}
                             className="rounded object-cover"
                           />
                         </div>

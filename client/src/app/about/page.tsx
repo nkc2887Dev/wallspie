@@ -1,7 +1,35 @@
-'use client';
-
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
+import { Metadata } from 'next';
+const baseUrl = process.env.FRONT_URL || 'https://wallspie.com'
+
+export const metadata: Metadata = {
+  title: 'About Us',
+  description: 'Learn about WallsPie, your ultimate destination for stunning, high-quality wallpapers. Discover our mission to provide curated collections of breathtaking 4K and HD wallpapers for free. Browse 10K+ wallpapers across 50+ categories.',
+  keywords: ['about wallspie', 'wallpaper website', 'high quality wallpapers', 'free wallpapers', '4k wallpapers', 'about us'],
+  openGraph: {
+    title: 'About WallsPie - Free 4K Wallpapers & HD Backgrounds',
+    description: 'Learn about WallsPie and our mission to provide stunning high-quality wallpapers for your devices.',
+    type: 'website',
+    url: `${baseUrl}/about`,
+    images: [
+      {
+        url: `${baseUrl}/og-image.jpg`,
+        width: 1200,
+        height: 630,
+        alt: 'About WallsPie',
+      },
+    ],
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'About WallsPie',
+    description: 'Learn about WallsPie and our mission to provide stunning high-quality wallpapers.',
+  },
+  alternates: {
+    canonical: `${baseUrl}/about`,
+  },
+};
 
 export default function AboutPage() {
   return (
@@ -164,7 +192,7 @@ export default function AboutPage() {
             </p>
             <a
               href="/"
-              className="inline-block bg-white text-purple-600 px-8 py-4 rounded-lg font-bold text-lg hover:bg-gray-100 transition-all shadow-lg hover:shadow-xl transform hover:-translate-y-1"
+              className="inline-block bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white px-8 py-4 rounded-lg font-bold text-lg transition-all shadow-lg hover:shadow-xl transform hover:-translate-y-1"
             >
               Browse Wallpapers
             </a>

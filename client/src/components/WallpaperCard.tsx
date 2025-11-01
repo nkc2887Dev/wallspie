@@ -12,6 +12,7 @@ interface WallpaperCardProps {
     title: string;
     slug: string;
     thumbnail_url: string;
+    medium_url?: string;
     download_count: number;
     view_count: number;
     is_featured: number;
@@ -47,9 +48,10 @@ export default function WallpaperCard({ wallpaper }: WallpaperCardProps) {
     <Link href={`/wallpaper/${wallpaper.slug}`} className="group block">
       <div className="relative overflow-hidden rounded-lg bg-gray-200 aspect-[3/4]">
         <Image
-          src={wallpaper.thumbnail_url}
+          src={wallpaper.medium_url || wallpaper.thumbnail_url}
           alt={wallpaper.title}
           fill
+          quality={95}
           className="object-cover group-hover:scale-105 transition-transform duration-300"
           sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
         />
