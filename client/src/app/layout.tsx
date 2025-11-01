@@ -39,6 +39,20 @@ export const metadata: Metadata = {
     address: false,
     telephone: false,
   },
+  icons: {
+    icon: [
+      { url: '/logo-icon.svg', type: 'image/svg+xml' },
+      { url: '/favicon-16x16.png', sizes: '16x16', type: 'image/png' },
+      { url: '/favicon-32x32.png', sizes: '32x32', type: 'image/png' },
+    ],
+    apple: [
+      { url: '/apple-touch-icon.png', sizes: '180x180', type: 'image/png' },
+    ],
+    other: [
+      { rel: 'mask-icon', url: '/logo-icon.svg', color: '#9333ea' },
+    ],
+  },
+  manifest: '/site.webmanifest',
   openGraph: {
     type: "website",
     locale: "en_US",
@@ -48,7 +62,7 @@ export const metadata: Metadata = {
     siteName: "WallsPie",
     images: [
       {
-        url: `${baseUrl}/og-image.jpg`,
+        url: `${baseUrl}/logo.svg`,
         width: 1200,
         height: 630,
         alt: "WallsPie - Free 4K Wallpapers",
@@ -59,7 +73,7 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: "WallsPie - Free 4K Wallpapers & HD Backgrounds",
     description: "Download free 4K, HD, and mobile wallpapers. Browse thousands of high-quality images.",
-    images: [`${baseUrl}/og-image.jpg`],
+    images: [`${baseUrl}/logo.svg`],
     creator: "@wallspie",
     site: "@wallspie",
   },
@@ -109,7 +123,7 @@ export default function RootLayout({
       url: baseUrl,
       logo: {
         '@type': 'ImageObject',
-        url: `${baseUrl}/logo.png`
+        url: `${baseUrl}/logo.svg`
       }
     }
   };
@@ -119,7 +133,7 @@ export default function RootLayout({
     '@type': 'Organization',
     name: 'WallsPie',
     url: baseUrl,
-    logo: `${baseUrl}/logo.png`,
+    logo: `${baseUrl}/logo.svg`,
     description: 'Free 4K wallpapers and HD backgrounds for desktop and mobile devices',
     sameAs: [
       'https://twitter.com/wallspie',

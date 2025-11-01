@@ -1,6 +1,7 @@
 'use client';
 
 import Link from 'next/link';
+import Image from 'next/image';
 import { useAuth } from '@/contexts/AuthContext';
 import { useState, useRef, useEffect } from 'react';
 import { USER_TYPE } from '@/constants';
@@ -29,8 +30,15 @@ export default function Header() {
       <nav className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between h-16">
           <div className="flex items-center">
-            <Link href="/" className="flex items-center space-x-2">
-              <span className="text-2xl font-bold text-purple-600">WallsPie</span>
+            <Link href="/" className="flex items-center">
+              <Image
+                src="/logo-horizontal.svg"
+                alt="WallsPie - Free 4K Wallpapers"
+                width={180}
+                height={60}
+                className="h-10 w-auto"
+                priority
+              />
             </Link>
 
             <div className="hidden md:ml-10 md:flex md:space-x-8">

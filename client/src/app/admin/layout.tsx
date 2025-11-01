@@ -3,6 +3,7 @@
 import { useEffect, useState, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
+import Image from 'next/image';
 import { useAuth } from '@/contexts/AuthContext';
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
@@ -58,8 +59,15 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16">
             <div className="flex items-center">
-              <Link href="/admin" className="text-2xl font-bold">
-                WallsPie Admin
+              <Link href="/admin" className="flex items-center">
+                <Image
+                  src="/logo-horizontal.svg"
+                  alt="WallsPie Admin"
+                  width={180}
+                  height={60}
+                  className="h-9 w-auto"
+                  priority
+                />
               </Link>
               <nav className="ml-10 flex space-x-4">
                 <Link
