@@ -2,6 +2,8 @@ import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
 import { AuthProvider } from "@/contexts/AuthContext";
+import GoogleAdsense from "@/components/GoogleAdsense";
+import CookieConsent from "@/components/CookieConsent";
 const baseUrl = process.env.FRONT_URL || 'https://wallspie.com'
 
 const inter = Inter({ subsets: ["latin"] });
@@ -174,8 +176,10 @@ export default function RootLayout({
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
       </head>
       <body className={inter.className}>
+        <GoogleAdsense />
         <AuthProvider>
           {children}
+          <CookieConsent />
         </AuthProvider>
       </body>
     </html>
