@@ -42,20 +42,24 @@ export default function Header() {
             </Link>
 
             <div className="hidden md:ml-10 md:flex md:space-x-8">
-              <Link href="/categories" className="text-gray-700 hover:text-purple-600 px-3 py-2 text-sm font-medium">
-                Categories
+              <Link href="/categories" className="relative text-gray-700 hover:text-purple-600 px-3 py-2 text-sm font-medium transition-colors group">
+                <span>Categories</span>
+                <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-gradient-to-r from-purple-600 to-pink-600 group-hover:w-full transition-all duration-300 ease-out"></span>
               </Link>
-              <Link href="/search" className="text-gray-700 hover:text-purple-600 px-3 py-2 text-sm font-medium">
-                Search
+              <Link href="/search" className="relative text-gray-700 hover:text-purple-600 px-3 py-2 text-sm font-medium transition-colors group">
+                <span>Search</span>
+                <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-gradient-to-r from-purple-600 to-pink-600 group-hover:w-full transition-all duration-300 ease-out"></span>
               </Link>
               {/* {(isAuthenticated && !isGuest) && (
-                <Link href="/favorites" className="text-gray-700 hover:text-purple-600 px-3 py-2 text-sm font-medium">
-                  Favorites
+                <Link href="/favorites" className="relative text-gray-700 hover:text-purple-600 px-3 py-2 text-sm font-medium transition-colors group">
+                  <span>Favorites</span>
+                  <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-gradient-to-r from-purple-600 to-pink-600 group-hover:w-full transition-all duration-300 ease-out"></span>
                 </Link>
               )}
               {isAdmin && (
-                <Link href="/admin" className="text-purple-600 hover:text-blue-800 px-3 py-2 text-sm font-medium">
-                  Admin
+                <Link href="/admin" className="relative text-purple-600 hover:text-blue-800 px-3 py-2 text-sm font-medium transition-colors group">
+                  <span>Admin</span>
+                  <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-gradient-to-r from-purple-600 to-pink-600 group-hover:w-full transition-all duration-300 ease-out"></span>
                 </Link>
               )} */}
             </div>
@@ -152,8 +156,9 @@ export default function Header() {
               </>
             ) : (
               <>
-                <Link href="/login" className="text-gray-700 hover:text-purple-600 px-3 py-2 text-sm font-medium">
-                  Login
+                <Link href="/login" className="relative text-gray-700 hover:text-purple-600 px-3 py-2 text-sm font-medium transition-colors group">
+                  <span>Login</span>
+                  <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-gradient-to-r from-purple-600 to-pink-600 group-hover:w-full transition-all duration-300 ease-out"></span>
                 </Link>
                 <Link href="/register" className="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white px-4 py-2 rounded-md text-sm font-medium transition-all">
                   Sign Up
