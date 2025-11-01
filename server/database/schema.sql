@@ -1,8 +1,8 @@
 -- WallsPie Database Schema
 -- MySQL Database for Wallpaper Download Website
 
-CREATE DATABASE IF NOT EXISTS wellpie_db CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
-  USE wellpie_db;
+CREATE DATABASE IF NOT EXISTS wallspie_vp CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+  USE wallspie_vp;
 
 -- Drop tables if exists (for clean setup)
 DROP TABLE IF EXISTS analytics_daily;

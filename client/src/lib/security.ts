@@ -151,7 +151,7 @@ export function preventClickjacking() {
   if (typeof window !== 'undefined') {
     if (window.top !== window.self) {
       // Page is in an iframe
-      window.top!.location = window.self.location;
+      window.top!.location.href = window.self.location.href;
     }
   }
 }
