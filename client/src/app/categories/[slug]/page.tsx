@@ -24,13 +24,19 @@ export default function CategoryPage() {
       try {
         setLoading(true);
         const categoryResponse = await api.getCategoryBySlug(slug);
-        setCategory(categoryResponse.data);
 
         const wallpapersResponse = await api.getWallpapersByCategory(
           categoryResponse.data.id,
           { page: 1, limit: 12 }
         );
 
+        // Update category with actual wallpaper count from pagination
+        const updatedCategory = {
+          ...categoryResponse.data,
+          wallpaper_count: wallpapersResponse.pagination?.total || wallpapersResponse.data?.length || 0
+        };
+
+        setCategory(updatedCategory);
         setWallpapers(wallpapersResponse.data || []);
         setHasMore(
           (wallpapersResponse.pagination?.page || 0) < (wallpapersResponse.pagination?.totalPages || 0)
