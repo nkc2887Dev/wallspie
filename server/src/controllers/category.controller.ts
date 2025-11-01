@@ -179,15 +179,15 @@ export class CategoryController {
     }
   }
 
-  // Get category by source (admin/unsplash)
+  // Get category by source (admin)
   static async getBySource(req: Request, res: Response): Promise<void> {
     try {
       const { source } = req.params;
 
-      if (source !== 'admin' && source !== 'unsplash') {
+      if (source !== 'admin') {
         res.status(400).json({
           success: false,
-          error: 'Invalid source. Must be "admin" or "unsplash"',
+          error: 'Invalid source. Must be "admin"',
         });
         return;
       }

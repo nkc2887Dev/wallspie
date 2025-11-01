@@ -7,6 +7,7 @@ import { useAuth } from '@/contexts/AuthContext';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import { USER_TYPE } from '@/constants';
+import { isValidEmail, sanitizeHtml, detectSuspiciousInput } from '@/lib/security';
 
 export default function LoginPage() {
   const router = useRouter();
@@ -33,8 +34,25 @@ export default function LoginPage() {
     setLoading(true);
 
     try {
-      await login(formData.email, formData.password);
-      
+      // Security: Validate email format
+      if (!isValidEmail(formData.email)) {
+        setError('Please enter a valid email address');
+        setLoading(false);
+        return;
+      }
+
+      // Security: Check for suspicious input patterns
+      if (detectSuspiciousInput(formData.email) || detectSuspiciousInput(formData.password)) {
+        setError('Invalid input detected. Please check your credentials.');
+        setLoading(false);
+        return;
+      }
+
+      // Security: Sanitize inputs before sending
+      const sanitizedEmail = sanitizeHtml(formData.email.trim());
+
+      await login(sanitizedEmail, formData.password);
+
       // Check if there's a stored redirect path
       const redirectPath = sessionStorage.getItem('redirectAfterLogin');
       if (redirectPath) {

@@ -6,6 +6,12 @@ import { useRouter } from 'next/navigation';
 import { useAuth } from '@/contexts/AuthContext';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
+import {
+  isValidEmail,
+  sanitizeHtml,
+  detectSuspiciousInput,
+  validatePasswordStrength
+} from '@/lib/security';
 
 export default function RegisterPage() {
   const router = useRouter();
@@ -20,24 +26,53 @@ export default function RegisterPage() {
   const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [passwordStrength, setPasswordStrength] = useState({ score: 0, feedback: [] as string[] });
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
     setFormData({
       ...formData,
-      [e.target.name]: e.target.value,
+      [name]: value,
     });
     setError('');
+
+    // Check password strength on password field change
+    if (name === 'password') {
+      const strength = validatePasswordStrength(value);
+      setPasswordStrength(strength);
+    }
   };
 
   const validateForm = () => {
+    // Security: Validate email format
+    if (!isValidEmail(formData.email)) {
+      setError('Please enter a valid email address');
+      return false;
+    }
+
+    // Security: Check for suspicious input
+    if (
+      detectSuspiciousInput(formData.name) ||
+      detectSuspiciousInput(formData.email) ||
+      detectSuspiciousInput(formData.password)
+    ) {
+      setError('Invalid input detected. Please check your information.');
+      return false;
+    }
+
+    // Validate passwords match
     if (formData.password !== formData.confirmPassword) {
       setError('Passwords do not match');
       return false;
     }
-    if (formData.password.length < 8) {
-      setError('Password must be at least 8 characters long');
+
+    // Security: Validate password strength
+    const strength = validatePasswordStrength(formData.password);
+    if (!strength.valid) {
+      setError(`Password is too weak: ${strength.feedback.join(', ')}`);
       return false;
     }
+
     return true;
   };
 
@@ -52,7 +87,11 @@ export default function RegisterPage() {
     setLoading(true);
 
     try {
-      await register(formData.name, formData.email, formData.password);
+      // Security: Sanitize inputs before sending
+      const sanitizedName = sanitizeHtml(formData.name.trim());
+      const sanitizedEmail = sanitizeHtml(formData.email.trim());
+
+      await register(sanitizedName, sanitizedEmail, formData.password);
       router.push('/');
     } catch (err: any) {
       setError(err.response?.data?.error || 'Registration failed. Please try again.');
@@ -140,7 +179,38 @@ export default function RegisterPage() {
                     )}
                   </button>
                 </div>
-                <p className="mt-1 text-sm text-gray-500">At least 8 characters</p>
+                {formData.password && (
+                  <div className="mt-2">
+                    <div className="flex items-center gap-2 mb-1">
+                      <div className="flex-1 h-2 bg-gray-200 rounded-full overflow-hidden">
+                        <div
+                          className={`h-full transition-all duration-300 ${
+                            passwordStrength.score <= 2
+                              ? 'bg-red-500'
+                              : passwordStrength.score <= 3
+                              ? 'bg-yellow-500'
+                              : 'bg-green-500'
+                          }`}
+                          style={{ width: `${(passwordStrength.score / 5) * 100}%` }}
+                        />
+                      </div>
+                      <span className="text-xs font-medium text-gray-600">
+                        {passwordStrength.score <= 2
+                          ? 'Weak'
+                          : passwordStrength.score <= 3
+                          ? 'Medium'
+                          : 'Strong'}
+                      </span>
+                    </div>
+                    {passwordStrength.feedback.length > 0 && (
+                      <ul className="text-xs text-gray-500 space-y-1">
+                        {passwordStrength.feedback.map((tip, idx) => (
+                          <li key={idx}>• {tip}</li>
+                        ))}
+                      </ul>
+                    )}
+                  </div>
+                )}
               </div>
 
               <div>

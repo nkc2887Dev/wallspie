@@ -22,12 +22,18 @@ const nextConfig: NextConfig = {
   trailingSlash: false,
   // Power optimized for better SEO
   poweredByHeader: false,
-  // Headers for security and SEO
+  // Completely disable Next.js dev indicators
+  devIndicators: false,
+  // Enhanced security headers
   async headers() {
     return [
       {
         source: '/:path*',
         headers: [
+          {
+            key: 'X-DNS-Prefetch-Control',
+            value: 'on'
+          },
           {
             key: 'X-Content-Type-Options',
             value: 'nosniff',
@@ -39,6 +45,14 @@ const nextConfig: NextConfig = {
           {
             key: 'X-XSS-Protection',
             value: '1; mode=block',
+          },
+          {
+            key: 'Referrer-Policy',
+            value: 'strict-origin-when-cross-origin',
+          },
+          {
+            key: 'Permissions-Policy',
+            value: 'camera=(), microphone=(), geolocation=()',
           },
         ],
       },
