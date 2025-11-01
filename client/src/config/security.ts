@@ -12,17 +12,20 @@ export const SECURITY_CONFIG = {
   allowedOrigins: [
     'http://localhost:3000',
     'http://localhost:5000',
+    'http://127.0.0.1:3000',
+    'http://127.0.0.1:5000',
     // Production domains - update these with your actual domains
     'https://wallspie.com',
     'https://www.wallspie.com',
     process.env.NEXT_PUBLIC_SITE_URL,
-  ].filter(Boolean) as string[],
+  ].filter((origin): origin is string => typeof origin === 'string' && origin.length > 0),
 
   // Allowed API endpoints - NO WILDCARDS
   allowedApiEndpoints: [
     'http://localhost:5000',
+    'http://127.0.0.1:5000',
     process.env.NEXT_PUBLIC_API_URL?.replace('/api/v1', ''),
-  ].filter(Boolean) as string[],
+  ].filter((endpoint): endpoint is string => typeof endpoint === 'string' && endpoint.length > 0),
 
   // Allowed image CDN domains - NO WILDCARDS
   allowedImageDomains: [
