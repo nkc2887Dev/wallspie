@@ -37,8 +37,12 @@ COPY --from=builder /app/public ./public
 COPY --from=builder /app/.next/standalone ./
 COPY --from=builder /app/.next/static ./.next/static
 
+# Copy start script
+COPY start.sh ./start.sh
+
 # Set correct permissions
-RUN chown -R nextjs:nodejs /app
+RUN chown -R nextjs:nodejs /app && \
+    chmod +x ./start.sh
 
 USER nextjs
 
@@ -47,4 +51,5 @@ EXPOSE 3000
 ENV PORT 3000
 ENV HOSTNAME "0.0.0.0"
 
-CMD ["node", "server.js"]
+# Use start.sh for better startup handling
+CMD ["./start.sh"]

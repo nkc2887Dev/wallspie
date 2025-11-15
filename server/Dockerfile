@@ -41,8 +41,12 @@ COPY --from=deps /app/node_modules ./node_modules
 COPY --from=builder /app/dist ./dist
 COPY --from=builder /app/package.json ./package.json
 
+# Copy start script
+COPY start.sh ./start.sh
+
 # Set correct permissions
-RUN chown -R expressjs:nodejs /app
+RUN chown -R expressjs:nodejs /app && \
+    chmod +x ./start.sh
 
 USER expressjs
 
@@ -50,4 +54,5 @@ EXPOSE 5000
 
 ENV PORT 5000
 
-CMD ["node", "dist/index.js"]
+# Use start.sh for better startup handling
+CMD ["./start.sh"]
